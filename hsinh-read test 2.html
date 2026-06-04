@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IELTS Academic Reading – G.EDU</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1a1a2e;
+    --gold: #c9a84c;
+    --gold-light: #e8d08a;
+    --cream: #f8f5ef;
+    --cream-dark: #ede9e0;
+    --text: #2c2c3e;
+    --text-light: #6b6b80;
+    --white: #ffffff;
+    --border: #d6d0c4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Be Vietnam Pro', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; user-select: none; -webkit-user-select: none; }
+
+  /* ── LOGIN ── */
+  #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--navy); background-image: radial-gradient(ellipse at 20% 50%, #2a2a4a 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #1e3a2e 0%, transparent 50%); }
+  .login-card { background: var(--cream); border-radius: 4px; padding: 52px 48px 44px; width: 440px; max-width: 95vw; box-shadow: 0 32px 80px rgba(0,0,0,0.5); border-top: 4px solid var(--gold); }
+  .login-logo { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--navy); letter-spacing: 2px; margin-bottom: 4px; }
+  .login-logo span { color: var(--gold); }
+  .login-subtitle { font-size: 0.78rem; color: var(--text-light); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 36px; border-bottom: 1px solid var(--border); padding-bottom: 20px; }
+  .login-card label { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-light); margin-bottom: 8px; }
+  .login-card input { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 3px; font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.95rem; background: var(--white); color: var(--text); margin-bottom: 20px; transition: border-color 0.2s; outline: none; }
+  .login-card input:focus { border-color: var(--gold); }
+  .login-card input::placeholder { color: #b0a898; }
+  .btn-start { width: 100%; padding: 14px; background: var(--navy); color: var(--gold); border: none; border-radius: 3px; font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.95rem; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: all 0.25s; opacity: 0.4; pointer-events: none; }
+  .btn-start.active { opacity: 1; pointer-events: all; }
+  .btn-start.active:hover { background: #0d0d1f; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,26,46,0.4); }
+  .login-note { text-align: center; font-size: 0.72rem; color: var(--text-light); margin-top: 18px; }
+
+  /* ── EXAM SCREEN ── */
+  #exam-screen { display: none; flex-direction: column; height: 100vh; }
+
+  /* Header */
+  .exam-header { background: var(--navy); padding: 0 24px; height: 54px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; border-bottom: 2px solid var(--gold); }
+  .header-logo { font-family: 'Playfair Display', serif; font-size: 1.45rem; color: var(--gold); letter-spacing: 2px; }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .header-info { font-size: 0.78rem; color: rgba(255,255,255,0.65); }
+  .header-info .name-tag { color: var(--gold-light); font-weight: 600; }
+  .timer-badge { background: rgba(201,168,76,0.15); border: 1px solid var(--gold); border-radius: 20px; padding: 4px 14px; color: var(--gold); font-weight: 600; font-size: 0.85rem; letter-spacing: 1px; }
+  .btn-submit-hdr { padding: 7px 18px; background: var(--gold); color: var(--navy); border: none; border-radius: 3px; font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-submit-hdr:hover { background: var(--gold-light); }
+
+  /* Passage tabs */
+  .passage-tabs { display: flex; background: var(--navy); border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; padding: 0 24px; gap: 2px; }
+  .ptab { padding: 10px 22px; font-size: 0.78rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.4); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; white-space: nowrap; }
+  .ptab:hover { color: rgba(255,255,255,0.7); }
+  .ptab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .ptab .tab-count { font-size: 0.68rem; opacity: 0.7; margin-left: 4px; }
+
+  /* Progress */
+  .progress-wrap { background: rgba(255,255,255,0.08); height: 3px; flex-shrink: 0; }
+  .progress-bar { height: 3px; background: var(--gold); transition: width 0.3s; width: 0%; }
+
+  /* Body */
+  .exam-body { display: flex; flex: 1; overflow: hidden; }
+  .passage-col { width: 50%; overflow-y: auto; padding: 32px 36px; background: var(--white); border-right: 1px solid var(--border); }
+  .questions-col { width: 50%; overflow-y: auto; padding: 24px 28px; background: var(--cream); }
+
+  /* Passage panel visibility */
+  .passage-panel { display: none; }
+  .passage-panel.active { display: block; }
+  .q-panel { display: none; }
+  .q-panel.active { display: block; }
+
+  /* Passage typography */
+  .passage-tag { font-size: 0.68rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+  .passage-read-instr { font-size: 0.8rem; color: var(--text-light); font-style: italic; margin-bottom: 14px; }
+  .passage-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: var(--navy); margin-bottom: 18px; line-height: 1.3; }
+  .passage-subtitle { font-size: 0.82rem; color: #555; font-style: italic; margin-bottom: 16px; line-height: 1.5; }
+  .passage-body p { font-size: 0.875rem; line-height: 1.85; margin-bottom: 14px; text-align: justify; }
+  .para-label { font-weight: 700; color: var(--navy); }
+
+  /* Nav buttons bottom */
+  .passage-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .nav-btn { padding: 9px 20px; border: 1.5px solid var(--border); border-radius: 3px; background: var(--white); font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text); transition: all 0.2s; }
+  .nav-btn:hover { border-color: var(--navy); color: var(--navy); }
+  .nav-btn.primary { background: var(--navy); color: var(--gold); border-color: var(--navy); }
+  .nav-btn.primary:hover { background: #0d0d1f; }
+  .nav-btn:disabled { opacity: 0.3; pointer-events: none; }
+
+  /* Question sections */
+  .q-section { background: var(--white); border-radius: 4px; border: 1px solid var(--border); padding: 22px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .q-section-header { font-size: 0.72rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .q-instruction { font-size: 0.81rem; color: var(--text-light); margin-bottom: 14px; line-height: 1.6; }
+  .q-instruction strong { color: var(--text); }
+  .q-instruction em { font-style: italic; }
+
+  /* TF/NG */
+  .tfng-row { padding: 10px 0; border-bottom: 1px solid var(--cream-dark); }
+  .tfng-row:last-child { border-bottom: none; }
+  .tfng-stmt { font-size: 0.84rem; margin-bottom: 8px; line-height: 1.5; }
+  .q-num { font-weight: 700; color: var(--navy); margin-right: 5px; }
+  .tfng-options { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tfng-btn { padding: 4px 12px; border: 1.5px solid var(--border); border-radius: 20px; background: transparent; font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.18s; color: var(--text-light); }
+  .tfng-btn:hover { border-color: var(--navy); color: var(--navy); }
+  .tfng-btn.selected { background: var(--navy); border-color: var(--navy); color: var(--gold); }
+
+  /* Flowchart */
+  .flowchart { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 0; }
+  .flow-box { background: var(--cream); border: 1px solid var(--border); border-radius: 3px; padding: 9px 16px; font-size: 0.82rem; text-align: center; width: 100%; line-height: 1.5; }
+  .flow-arrow { font-size: 1rem; color: var(--text-light); }
+  .flow-inline { border: none; border-bottom: 2px solid var(--gold); background: transparent; font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--navy); text-align: center; width: 90px; outline: none; padding: 1px 4px; }
+
+  /* Fill inline */
+  .fill-block { margin-bottom: 11px; }
+  .fill-block .fill-label { font-size: 0.83rem; line-height: 1.6; }
+  .fill-inline { border: none; border-bottom: 2px solid var(--gold); background: transparent; font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.84rem; font-weight: 600; color: var(--navy); width: 120px; outline: none; padding: 1px 4px; }
+
+  /* Match / select */
+  .match-table { width: 100%; border-collapse: collapse; }
+  .match-table th { background: var(--navy); color: var(--gold); font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; padding: 8px 10px; text-align: left; }
+  .match-table td { padding: 8px 10px; font-size: 0.82rem; border-bottom: 1px solid var(--cream-dark); vertical-align: middle; }
+  .match-table tr:last-child td { border-bottom: none; }
+  .match-select { border: 1.5px solid var(--border); border-radius: 3px; background: var(--white); font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.82rem; padding: 5px 8px; outline: none; color: var(--text); cursor: pointer; transition: border-color 0.2s; }
+  .match-select:focus { border-color: var(--gold); }
+
+  /* Multi-select */
+  .multi-option { display: flex; align-items: flex-start; gap: 10px; padding: 7px 10px; border-radius: 3px; cursor: pointer; transition: background 0.15s; font-size: 0.84rem; margin-bottom: 4px; border: 1.5px solid transparent; }
+  .multi-option:hover { background: var(--cream-dark); }
+  .multi-option.selected { background: #edf2ff; border-color: #5b7cda; }
+  .multi-option input[type=checkbox] { margin-top: 2px; accent-color: var(--navy); flex-shrink: 0; }
+
+  /* Summary */
+  .summary-text { font-size: 0.84rem; line-height: 2.1; }
+
+  /* Classify table */
+  .classify-table { width: 100%; border-collapse: collapse; }
+  .classify-table th { background: var(--navy); color: var(--gold); font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; padding: 8px 10px; text-align: center; }
+  .classify-table th:first-child { text-align: left; }
+  .classify-table td { padding: 8px 10px; font-size: 0.81rem; border-bottom: 1px solid var(--cream-dark); vertical-align: middle; }
+  .classify-table tr:last-child td { border-bottom: none; }
+  .opt-cell { text-align: center; }
+  .radio-circle { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 50%; display: inline-block; cursor: pointer; transition: all 0.18s; position: relative; }
+  .radio-circle.selected { border-color: var(--navy); background: var(--navy); }
+  .radio-circle.selected::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 6px; height: 6px; background: var(--gold); border-radius: 50%; }
+
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(10,10,20,0.75); z-index: 999; align-items: center; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal-box { background: var(--white); border-radius: 4px; padding: 40px 44px; max-width: 420px; width: 90%; text-align: center; border-top: 4px solid var(--gold); box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
+  .modal-box h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--navy); margin-bottom: 12px; }
+  .modal-box p { font-size: 0.87rem; color: var(--text-light); line-height: 1.6; margin-bottom: 24px; }
+  .modal-actions { display: flex; gap: 12px; justify-content: center; }
+  .btn-cancel { padding: 10px 24px; border: 1.5px solid var(--border); border-radius: 3px; background: transparent; font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.85rem; cursor: pointer; color: var(--text-light); transition: all 0.2s; }
+  .btn-cancel:hover { border-color: var(--text); color: var(--text); }
+  .btn-confirm { padding: 10px 24px; background: var(--navy); color: var(--gold); border: none; border-radius: 3px; font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-confirm:hover { background: #0d0d1f; }
+
+  /* Sending */
+  .sending-overlay { display: none; position: fixed; inset: 0; background: rgba(26,26,46,0.85); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 16px; color: var(--cream); font-size: 0.9rem; }
+  .sending-overlay.show { display: flex; }
+  .spinner { width: 36px; height: 36px; border: 3px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Result */
+  #result-screen { display: none; min-height: 100vh; background: var(--navy); background-image: radial-gradient(ellipse at 30% 40%, #2a2a4a 0%, transparent 60%); align-items: center; justify-content: center; }
+  .result-card { background: var(--cream); border-radius: 4px; padding: 56px 60px; text-align: center; max-width: 500px; width: 92%; border-top: 4px solid var(--gold); box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+  .result-logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--navy); letter-spacing: 2px; margin-bottom: 28px; }
+  .result-logo span { color: var(--gold); }
+  .result-congrats { font-size: 0.78rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .result-name { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--navy); margin-bottom: 4px; }
+  .result-subtitle { font-size: 0.82rem; color: var(--text-light); margin-bottom: 36px; }
+  .result-scores { display: flex; gap: 24px; justify-content: center; margin-bottom: 32px; }
+  .score-box { background: var(--white); border: 1px solid var(--border); border-radius: 4px; padding: 20px 28px; flex: 1; }
+  .score-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-light); margin-bottom: 8px; }
+  .score-val { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--navy); line-height: 1; }
+  .score-val.band { color: var(--gold); }
+  .result-note { font-size: 0.78rem; color: var(--text-light); border-top: 1px solid var(--border); padding-top: 20px; line-height: 1.7; }
+
+  /* Scrollbar */
+  .passage-col::-webkit-scrollbar, .questions-col::-webkit-scrollbar { width: 4px; }
+  .passage-col::-webkit-scrollbar-thumb, .questions-col::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">G<span>.</span>EDU</div>
+    <div class="login-subtitle">IELTS Academic Reading</div>
+    <label>Họ và Tên</label>
+    <input type="text" id="inp-name" placeholder="Nhập họ và tên đầy đủ…" autocomplete="off">
+    <label>Mã Lớp (Class ID)</label>
+    <input type="text" id="inp-class" placeholder="VD: IELTS-2025-A" autocomplete="off">
+    <button class="btn-start" id="btn-start">🚀 Bắt đầu làm bài</button>
+    <div class="login-note">Vui lòng kiểm tra thông tin trước khi bắt đầu.</div>
+  </div>
+</div>
+
+<!-- ═══════════ EXAM ═══════════ -->
+<div id="exam-screen">
+  <div class="exam-header">
+    <div class="header-logo">G.EDU</div>
+    <div class="header-right">
+      <div class="header-info">IELTS Academic Reading &nbsp;·&nbsp; <span class="name-tag" id="hdr-name"></span></div>
+      <div class="timer-badge" id="timer">60:00</div>
+      <button class="btn-submit-hdr" onclick="openModal()">Nộp bài</button>
+    </div>
+  </div>
+
+  <!-- Passage tabs -->
+  <div class="passage-tabs">
+    <div class="ptab active" data-tab="1" onclick="switchTab(1)">Passage 1 <span class="tab-count">Q1–13</span></div>
+    <div class="ptab" data-tab="2" onclick="switchTab(2)">Passage 2 <span class="tab-count">Q14–26</span></div>
+    <div class="ptab" data-tab="3" onclick="switchTab(3)">Passage 3 <span class="tab-count">Q27–40</span></div>
+  </div>
+  <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <div class="exam-body">
+    <!-- ──── PASSAGE COLUMN ──── -->
+    <div class="passage-col">
+
+      <!-- PASSAGE 1 -->
+      <div class="passage-panel active" id="pp1">
+        <div class="passage-tag">Passage 1 · Questions 1–13</div>
+        <div class="passage-read-instr">Read the text and answer questions 1–13</div>
+        <div class="passage-title">THE EARLY HISTORY OF OLIVE OIL</div>
+        <div class="passage-body">
+          <p><span class="para-label">A&nbsp;</span>Olive oil is produced from the fruit of the olive tree, which is a member of the Oleaceae plant family. The trees require some cold weather during the year, but also tolerate hot, dry conditions, and do not like moisture when they are flowering. They actually produce better when subjected to these stressful conditions, and as a result, olive trees have traditionally been grown on land where little else will survive.</p>
+          <p><span class="para-label">B&nbsp;</span>Archaeologists today are divided over exactly where the first domestication of the olive occurred: some say it was in the area which is now Iran, Syria, Jordan and Egypt, while others contend it was in mainland Greece or on the island of Crete. The one thing that can be said with certainty is that cultivation began at least 6,000 years ago and spread slowly westward across the lands bordering on the Mediterranean Sea. Olive oil was used for a variety of purposes during these early times, including as a pharmacological ointment and in rituals for anointing royalty.</p>
+          <p><span class="para-label">C&nbsp;</span>The ancient Greeks believed the olive tree was a priceless gift from the goddess Athena and used its oil in sacred religious rituals. In fact, the Greek poet Homer called olive oil 'liquid gold', and during the 6th and 7th centuries BC Greek law forbade the cutting down of olive trees and made it punishable by death. The ancient Middle Eastern ruler King David valued his groves of olive trees and his olive oil warehouses so much that he posted guards around the clock to protect them.</p>
+          <p><span class="para-label">D&nbsp;</span>Over the years, olive oil developed other uses. Its employment in cooking dates at least as far back as the 5th century BC, as described by the Greek philosopher Plato. Its use as an aid to beauty and health later became ingrained in many Mediterranean cultures. The Romans, for example, are said to have used generous amounts on their bodies to moisturise their skin after bathing. With the spread of the Roman Empire, olive oil became a major commodity and its trade promoted commerce throughout the ancient world. It is generally believed that in the 1st–2nd century BC, olive trees were taken to North Africa and then to Spain, which was later to become the world's largest producer of olive oil. Artefacts found at various Mediterranean archaeological sites include olive oil storage vessels with olive plant residue still in them. Historical evidence still in existence in the form of wall paintings and ancient manuscripts (including the works of the Roman naturalist and philosopher, Pliny the Elder) all record production techniques and the various uses of olive oil.</p>
+          <p><span class="para-label">E&nbsp;</span>Making olive oil in those early days was a laborious process accomplished without mechanisation. Processing or milling the fruit involved several distinct stages to extract the liquid. The olives were harvested from the trees by hand or by beating the fruit from the trees with long sticks. The olives were then rinsed and crushed to separate out the large seed found in the centre of each. The remaining seedless flesh was put in woven bags and pressed. Hot water was then poured over the bags to separate the oil from the solid bits of olive. The liquid produced in this process, consisting of oil and water, was drained into stone basins or tanks, where it was allowed to settle and separate. In cold weather a bit of salt was added to speed up the process. As much oil as possible was drawn off the water, but the result was still not pure oil. Therefore, this impure mixture was allowed once more to settle in vats and then separated in order to refine the product.</p>
+          <p><span class="para-label">F&nbsp;</span>The waste water from the milling process, which is called amurca, is a bitter-tasting and foul-smelling liquid. In many ancient civilisations it was often simply discarded, causing serious pollution because of its acidity and high salt content. However, in the Roman period it was regarded as a very useful substance. When spread on surfaces, amurca forms a hard finish and therefore it was often applied to the floors of grain storage buildings where it hardened, keeping out water, mud and pests. When boiled down amurca was applied to leather to soften it so that it was easier to shape into articles of clothing and shoes. It could also be eaten by farm animals and was, in fact, fed to livestock suffering from malnutrition. According to ancient texts, amurca was also utilised in moderate amounts by farmers as a fertiliser or as a pesticide helping them to protect their crops from insects and even small rodents.</p>
+        </div>
+        <div class="passage-nav">
+          <button class="nav-btn" disabled>← Trước</button>
+          <button class="nav-btn primary" onclick="switchTab(2)">Passage 2 →</button>
+        </div>
+      </div>
+
+      <!-- PASSAGE 2 -->
+      <div class="passage-panel" id="pp2">
+        <div class="passage-tag">Passage 2 · Questions 14–26</div>
+        <div class="passage-read-instr">Read the text and answer questions 14–26</div>
+        <div class="passage-title">PLAYING WITH SCIENCE</div>
+        <div class="passage-subtitle"><em>Is science always a serious matter? No, says Pierre Laszlo, who believes that scientists are often just like children at play</em></div>
+        <div class="passage-body">
+          <p><span class="para-label">A&nbsp;</span>The connection between science and play is not often discussed, perhaps because scientists take it for granted, or because they are a little self-conscious about it and therefore try to hide it. In this context, play might describe a number of different activities. Play might involve the exploration of new uses for everyday objects just for curiosity; it could also include word jokes, or the playing of jokes or tricks upon other scientists. The element of play in science is thus an elusive and difficult topic, but it is fundamental to the experience of scientists.</p>
+          <p><span class="para-label">B&nbsp;</span>One example of this connection is the jigsaw puzzle. Such puzzles present their players with two-dimensional fragments, each with a characteristic shape, from which to reconstruct an overall picture. Guessing the solution of a scientific problem has many similarities to completing a jigsaw puzzle. The scientists inspect each piece of data for a possible fit with its neighbours and, bit by bit, construct a whole argument. People who are good at jigsaw puzzles are able to guess which piece will fit even before trying it. In the same way, the best scientists are those who make the best guesses.</p>
+          <p><span class="para-label">C&nbsp;</span>But scientists do not play only at out-guessing each other, or at putting together pieces to complete a puzzle. They also regard their work as 'playing' with "toys". Joseph Lambert, a professor of chemistry at Northwestern University in the US, shed some light on this tendency. In a letter he wrote the following:<br><br><em>When I grew up, every kid put in some serious sandbox time, and it often involved building... complex sand structures around which fantasies were composed... The organic chemistry labs at Yale, and chemical transformations took place... The odours were pleasant, and they were fun in the same way. We mixed things up, physical process of working with our hands, as with sand, was satisfying... by the end of the year, I knew that I wanted to be an organic chemist, as I realised one could play in the sandbox for a living.</em><br><br>Indeed, many scientists amuse themselves by 'playing' with various "toys" of their trade perhaps coming up with ingenious devices to get a particular job done, or diverting a piece of commercial equipment for novel scientific purposes. The apparatus put together by Robert Millikan and Harvey Fletcher to measure the charge of the electron, which involved a perfume atomiser bought at a local pharmacy, is a classic example of such inspired tinkering.</p>
+          <p><span class="para-label">D&nbsp;</span>Whereas society often keeps a lid on playfulness, science encourages and nurtures it. Take, for example, the funny names that scientists have given to various chemical substances: tristane, windowpane, penguinone or megaphone. Each class of organ molecules includes a few such humorous names. Similar fun is had in other fields of science.</p>
+          <p><span class="para-label">E&nbsp;</span>Hoaxes are a further aspect of the playfulness of scientists. A relatively recent example concerns the 'Plate of Brasse', which stated England's claim to California and was supposedly left by the English navigator Sir Francis Drake during his visit in 1579. A brass plate thought to be Drake's was discovered in the 1930s. But in 1977, Helen Michel and Frank Asaro, of the Lawrence Berkeley National Laboratory, showed that the copper and zinc used in the plate were of a higher quality than would have been available in the 1500s. They concluded that Drake's plate was most likely crafted much closer to the time when it was first brought to light.</p>
+          <p><span class="para-label">F&nbsp;</span>Shortly afterwards, staff at the University of California announced that the artefact was devised as a practical joke by a group of friends of Herbert E Bolton, who directed the Bancroft Library at the University's Berkeley campus. Bolton, it seems, was intrigued by tales of Drake having installed a plate to record his visit to California, and often urged his students to look for it. Some of Bolton's friends decided to play a joke on him, but things misfired after Bolton went public and announced that the relic was authentic before he could be told about the joke.</p>
+          <p><span class="para-label">G&nbsp;</span>Sometimes hoaxes serve a useful purpose. Some years ago, Nathan Lewis, a professor of chemistry at California Institute of Technology, and a graduate student were doing experiments in the laboratory of a senior professor, Harry Gray. Another co-worker had the habit of going through their data and rushing to Gray with his interpretation. Lewis decided to set a trap for the co-worker. He recalls: I manufactured an NMR spectrum. We left it out as bait. [Our colleague] took it and wrote up a paper on how important this result was. He was ready to go right to [the Journal of the American Chemical Society]... We didn't let him mail it [but] this stopped him temporarily from taking our data and interpreting it before making sure that it was right.</p>
+          <p><span class="para-label">H&nbsp;</span>But is the playfulness of science usually so helpful? One might argue that to play a practical joke is a waste of time. So why do it? Perhaps play is an inherent part of the human condition. The psychologist's answer might be that scientists tend to play because science presents them with too much seriousness. Another possibility might be that scientists like to play because they tend to be very young. Some disciplines, mathematics especially, have a reputation for the narrow window of creativity in youth. But it may also be that there is some cognitive value to the playful element in science. Playing with ideas, after all, is what science is all about. A playful, childlike attitude may be extremely fruitful, and scientists should not be too embarrassed to acknowledge that play is often what motivates them.</p>
+        </div>
+        <div class="passage-nav">
+          <button class="nav-btn" onclick="switchTab(1)">← Passage 1</button>
+          <button class="nav-btn primary" onclick="switchTab(3)">Passage 3 →</button>
+        </div>
+      </div>
+
+      <!-- PASSAGE 3 -->
+      <div class="passage-panel" id="pp3">
+        <div class="passage-tag">Passage 3 · Questions 27–40</div>
+        <div class="passage-read-instr">Read the text and answer questions 27–40</div>
+        <div class="passage-title">DOES CLASS SIZE MATTER?</div>
+        <div class="passage-body">
+          <p><span class="para-label">A&nbsp;</span>Of all the ideas for improving education, few are as simple or attractive as reducing the number of pupils per teacher. Unlike competing proposals for reform, class-size reductions rarely elicit huge outcries or involve structural change. The testing of educators, by contrast, generally arouses the anger of unions. Similarly, establishing special 'charter' schools involves privileging some schools over others, with the credits provided usually coming out of the budgets of struggling local schools. With its uncomplicated appeal, class-size reduction in the U.S. has lately gone from being a subject of primary academic interest to a policy juggernaut with over twenty states aiming at decreasing class sizes.</p>
+          <p><span class="para-label">B&nbsp;</span>Do small classes improve school achievement? To answer this, investigators have attempted to analyse existing data, such as records at the U.S. Department of Education. These reveal that there were steep drops in pupil-teacher ratios between 1969 and 1997, but no significant gains in academic performance.<br><br>But do these findings mean that class size makes no difference? Not necessarily. For instance, schools strive for more than just high test scores; they also usually try to keep their drop-out rates low. And, indeed, the drop-out rate for older students fell considerably over that period. Because drop-outs generally come from the low end of the achievement distribution, a reduction in the drop-out rate could be expected to pull down average test scores.<br><br>Another reason for discounting those data is the difficulty of ensuring a level playing field. In a perfect world, U.S. students would all come from well-off families, with two highly educated English-speaking parents who are involved in their children's schooling. Teachers would all be creative and have complete mastery of the subject matter. The reality is very different.</p>
+          <p><span class="para-label">C&nbsp;</span>Over the past 35 years, some studies of existing data have produced evidence that smaller classes benefit students, but most of these studies were poorly designed. The exception was the Tennessee study called Project STAR (Student Teacher Achievement Ratio). Frederick Mosteller of Harvard University has called it 'one of the greatest experiments in education in United States history'.<br><br>Students entering kindergarten were randomly assigned to one of three kinds of classes: a small class of 13 to 17 students, a regular-size class of 22 to 26 or a regular-size class with both a teacher and a full-time teacher's aide.<br><br>The students remained in whatever category they had been assigned to throughout the third grade, after which they joined a regular classroom in the fourth. To ensure that teaching quality did not differ, teachers were randomly assigned to small and regular-size classrooms. Few teachers received any special training for working with small classes, and there were no new curricular materials.</p>
+          <p><span class="para-label">D&nbsp;</span>At the end of STAR, researchers analysed the data. Jeremy Finn of New York University and Charles Achilles of Eastern Michigan University found evidence for 'an array of benefits of small classes'. They calculated that students in smaller classes were outperforming their counterparts in regular-sized classes by the first grade and that this advantage persisted even after students returned to larger classes. They also found that the effect was stronger for black and Hispanic minority groups – a significant finding for policy-makers.<br><br>Eric Hanushek of Stanford, however, criticises some of STAR's key conclusions. He argues that STAR does not prove that gains persist long after students return to regular classes. It was debatable how much later improvement stemmed from other factors, such as a supportive home. Nor does he accept that the benefits accumulate, with participants widening the gap with their peers in larger classes year by year.<br><br>Hanushek and others have also shown that during the study too many children moved from regular to small classes, probably because school personnel caved in to parent demands. And Hanushek also asserts that STAR failed to ensure good randomisation of teacher and student assignments. However, these points do not undermine STAR's basic findings.</p>
+          <p><span class="para-label">E&nbsp;</span>The largest public class size reduction programme so far, California's, stands more as a warning than as worthy of emulation. That state is trying to reduce classes in kindergarten through grade three despite a shortage of teachers that is most acute in low-income areas.<br><br>This is exacerbating the disparity in resources available to rich and poor schools in California, because more affluent areas can attract the best teachers. Indeed, some of the extra teachers needed are being recruited from the poorer schools. Researchers found a statistically significant achievement advantage in reading, writing and mathematics for students in classes that had been reduced to 20. What is more, the effect did not vary for students of different backgrounds.</p>
+          <p><span class="para-label">F&nbsp;</span>Wisconsin's Student Achievement Guarantee in Education (SAGE) was a five-year pilot study to do some of the groundwork for a major project. Class sizes were reduced in only 14 schools, but it was noteworthy for targeting schools at which 30% of the students were below poverty level, compared with California's across-the-board approach. SAGE lowered the average pupil-teacher ratio in kindergarten through third grade to 12-15:1 from 21-25:1. Analysts have studied the results of first-grade students in these schools and similar first-grade students elsewhere and found the results accord with those from STAR.<br><br>STAR and SAGE have made it hard to argue against reducing class sizes. But the California initiative shows that reductions made with too little forethought can yield minuscule gains. Administrators need solid information before they can make sensible policy decisions.</p>
+        </div>
+        <div class="passage-nav">
+          <button class="nav-btn" onclick="switchTab(2)">← Passage 2</button>
+          <button class="nav-btn primary" onclick="openModal()">🏁 Nộp bài</button>
+        </div>
+      </div>
+    </div><!-- /passage-col -->
+
+    <!-- ──── QUESTIONS COLUMN ──── -->
+    <div class="questions-col">
+
+      <!-- Q PANEL 1 -->
+      <div class="q-panel active" id="qp1">
+        <!-- Q1-6 -->
+        <div class="q-section">
+          <div class="q-section-header">Questions 1–6</div>
+          <div class="q-instruction">Choose <strong>TRUE</strong> if the statement agrees with the information given in the text, choose <strong>FALSE</strong> if the statement contradicts the information, or choose <strong>NOT GIVEN</strong> if there is no information on this.</div>
+          <div id="tfng-group"></div>
+        </div>
+        <!-- Q7-9 -->
+        <div class="q-section">
+          <div class="q-section-header">Questions 7–9</div>
+          <div class="q-instruction">Complete the flow-chart below. Write <strong>ONE WORD ONLY</strong> from the passage for each answer.</div>
+          <div style="text-align:center;font-weight:700;font-size:0.82rem;margin-bottom:12px;color:var(--navy);">Ancient olive oil processing</div>
+          <div class="flowchart">
+            <div class="flow-box">olives are harvested by picking them or <input type="text" class="flow-inline" id="q7" placeholder="7" maxlength="20"> the trees</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">milling stage</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">olives are washed and crushed and seeds removed</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">olive flesh is placed in <input type="text" class="flow-inline" id="q8" placeholder="8" maxlength="20"> and pressed</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">water is poured over the mixture</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">resulting liquid is given time to settle and separate, and <input type="text" class="flow-inline" id="q9" placeholder="9" maxlength="20"> is used to aid the process</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box">oil is drawn off and separation repeated</div>
+          </div>
+        </div>
+        <!-- Q10-13 -->
+        <div class="q-section">
+          <div class="q-section-header">Questions 10–13</div>
+          <div class="q-instruction">Complete the notes below. Write <strong>ONE WORD ONLY</strong> from the passage for each answer.</div>
+          <div style="text-align:center;font-weight:700;font-size:0.82rem;margin-bottom:12px;color:var(--navy);">Amurca</div>
+          <div class="fill-block"><div class="fill-label">In ancient times, this waste liquid was usually thrown away, which led to <span class="q-num">10</span> <input type="text" class="fill-inline" id="q10" placeholder="answer" maxlength="20"></div></div>
+          <div style="font-size:0.82rem;font-weight:600;margin:10px 0 8px;">However, Romans had practical applications for Amurca:</div>
+          <div class="fill-block"><div class="fill-label">• when dried, created hard surface, so used on <span class="q-num">11</span> <input type="text" class="fill-inline" id="q11" placeholder="answer" maxlength="20"> of certain buildings</div></div>
+          <div class="fill-block"><div class="fill-label">• used when making <span class="q-num">12</span> <input type="text" class="fill-inline" id="q12" placeholder="answer" maxlength="20"></div></div>
+          <div class="fill-block"><div class="fill-label">• into goods to wear fed to livestock</div></div>
+          <div class="fill-block"><div class="fill-label">• used on farms as a <span class="q-num">13</span> <input type="text" class="fill-inline" id="q13" placeholder="answer" maxlength="20"> to stop insects or animals damaging crops</div></div>
+        </div>
+      </div>
+
+      <!-- Q PANEL 2 -->
+      <div class="q-panel" id="qp2">
+        <!-- Q14-20 -->
+        <div class="q-section">
+          <div class="q-section-header">Questions 14–20</div>
+          <div class="q-instruction">Reading Passage 2 has eight paragraphs, <strong>A–H</strong>. Which paragraph contains the following information? Choose the correct letter, <strong>A–H</strong>.</div>
+          <table class="match-table">
+            <thead><tr><th style="width:32px">Q</th><th>Information</th><th style="width:64px">Para</th></tr></thead>
+            <tbody id="q14-20-body"></tbody>
+          </table>
+        </div>
+        <!-- Q21-22 -->
+        <div class="q-section">
+          <div class="q-section-header">Questions 21–22</div>
+          <div class="q-instruction">Choose <strong>TWO</strong> correct answers. Which TWO of the following reasons are given as possible explanations of scientists' play behaviour?</div>
+          <div id="q21-22-options"></div>
+        </div>
+        <!-- Q23-26 -->
+        <div class="q-section">
+          <div class="q-section-header">Questions 23–26</div>
+          <div class="q-instruction">Complete the summary below. Write <strong>NO MORE THAN THREE WORDS</strong> from the passage for each answer.</div>
+          <div style="text-align:center;font-weight:700;font-size:0.82rem;margin-bottom:12px;color:var(--navy);">Scientists play tricks</div>
+          <div class="summary-text">
+            The passage gives two examples of tricks arising from the playfulness of scientists. Researchers at Caltech found that a colleague had been stealing their <span class="q-num">23</span> <input type="text" class="fill-inline" id="q23" placeholder="answer" maxlength="30" style="width:100px"> and used a hoax involving a fake NMR spectrum to trap the offender. Another story concerns a plate which a famous <span class="q-num">24</span> <input type="text" class="fill-inline" id="q24" placeholder="answer" maxlength="40" style="width:140px"> is said to have left behind on a visit to California. The <span class="q-num">25</span> <input type="text" class="fill-inline" id="q25" placeholder="answer" maxlength="30" style="width:130px"> that the plate was made of later revealed that it was a fake, a hoax carried out by friends of the director of the <span class="q-num">26</span> <input type="text" class="fill-inline" id="q26" placeholder="answer" maxlength="40" style="width:150px">.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q PANEL 3 -->
+      <div class="q-panel" id="qp3">
+        <!-- Q27-31 -->
+        <div class="q-section">
+          <div class="q-section-header">Questions 27–31</div>
+          <div class="q-instruction">Reading Passage 3 has six sections, <strong>A–F</strong>. Which section contains the following information? Choose the correct letter, <strong>A–F</strong>. <em>NB You may use any letter more than once.</em></div>
+          <table class="match-table">
+            <thead><tr><th style="width:32px">Q</th><th>Information</th><th style="width:72px">Section</th></tr></thead>
+            <tbody id="q27-31-body"></tbody>
+          </table>
+        </div>
+        <!-- Q32-40 -->
+        <div class="q-section">
+          <div class="q-section-header">Questions 32–40</div>
+          <div class="q-instruction">Classify the following statements as referring to:<br>
+            <strong>A</strong> = Project STAR &nbsp;&nbsp; <strong>B</strong> = The California Project &nbsp;&nbsp; <strong>C</strong> = SAGE
+          </div>
+          <table class="classify-table">
+            <thead>
+              <tr>
+                <th style="text-align:left">Statement</th>
+                <th class="opt-cell" style="width:36px">A</th>
+                <th class="opt-cell" style="width:36px">B</th>
+                <th class="opt-cell" style="width:36px">C</th>
+              </tr>
+            </thead>
+            <tbody id="q32-40-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /questions-col -->
+  </div><!-- /exam-body -->
+</div><!-- /exam-screen -->
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <h3>Xác nhận nộp bài</h3>
+    <p>Bạn đã trả lời <strong id="ans-count">0</strong>/40 câu. Sau khi nộp bài, bạn sẽ không thể chỉnh sửa. Bạn có chắc chắn muốn nộp?</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Kiểm tra lại</button>
+      <button class="btn-confirm" onclick="submitExam()">Nộp bài ngay</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sending -->
+<div class="sending-overlay" id="sending-overlay">
+  <div class="spinner"></div>
+  <div>Đang gửi kết quả… vui lòng chờ</div>
+</div>
+
+<!-- Result -->
+<div id="result-screen">
+  <div class="result-card">
+    <div class="result-logo">G<span>.</span>EDU</div>
+    <div class="result-congrats">🎉 Chúc mừng</div>
+    <div class="result-name" id="res-name"></div>
+    <div class="result-subtitle">đã hoàn thành bài thi IELTS Academic Reading</div>
+    <div class="result-scores">
+      <div class="score-box"><div class="score-label">Số câu đúng</div><div class="score-val" id="res-correct"></div></div>
+      <div class="score-box"><div class="score-label">Band Score</div><div class="score-val band" id="res-band"></div></div>
+    </div>
+    <div class="result-note">Kết quả đã được ghi nhận thành công.<br>Cảm ơn bạn đã tham gia bài kiểm tra cùng G.EDU.</div>
+  </div>
+</div>
+
+<script>
+// ─── ANSWER KEY ───
+const _k=(s=>s.split('|'))('true|false|true|ng|true|ng|beating|bags|salt|pollution|floors|leather|pesticide|e|a|f|b|g|d|c|a,c|data|english navigator|copper and zinc|bancroft library|d|f|a|c|d|a|a|b|b|c|a|c|a|b|a');
+
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbze-ULqfpnB5IcJxAvg2m7IfSqkoUY4JmoHnjvpuGvxodzmLbhHHlcqxfcnha2aahY/exec';
+
+// ─── DATA ───
+const tfngData=[
+  {n:1,text:"In the cultivation of olives, a period without rain is advantageous."},
+  {n:2,text:"The most fertile fields are usually chosen for growing olives."},
+  {n:3,text:"In ancient Greece, the olive tree was said to have divine origins."},
+  {n:4,text:"Olive oil was more costly to buy in Greece than gold."},
+  {n:5,text:"Plato mentions the use of olive oil in the preparation of food."},
+  {n:6,text:"North African farmers initially resisted the introduction of olive trees."},
+];
+const q14to20Data=[
+  {n:14,text:"a description of how a test showed some evidence to be fake"},
+  {n:15,text:"reasons why scientists may be unwilling to admit that they play"},
+  {n:16,text:"the result of a trick going wrong"},
+  {n:17,text:"the similarity between a skill used in play and one used in science"},
+  {n:18,text:"how a group of scientists stopped a colleague misusing their results"},
+  {n:19,text:"some examples of the playful nature of scientific language"},
+  {n:20,text:"an example of an everyday object put to a scientific use"},
+];
+const q21to22Options=[
+  {id:'A',text:"Play may provide relief from their work."},
+  {id:'B',text:"Scientists sometimes spend time as teachers."},
+  {id:'C',text:"The age of scientists predisposes them to play."},
+  {id:'D',text:"Scientists get ideas from children's questions."},
+  {id:'E',text:"Scientists are secretive about their work."},
+];
+const q27to31Data=[
+  {n:27,text:"detailed criticism of the methodology of a project"},
+  {n:28,text:"a comparison of the data from class-reduction projects"},
+  {n:29,text:"the level of public interest in the issues of class-size reduction"},
+  {n:30,text:"details of action taken to protect the validity of a project"},
+  {n:31,text:"reasons why class composition changed during a project"},
+];
+const q32to40Data=[
+  {n:32,text:"The student composition of each class was left to chance."},
+  {n:33,text:"A long-term improvement in performance was claimed."},
+  {n:34,text:"Similar results were obtained for all social groups."},
+  {n:35,text:"The project was a preliminary to a more comprehensive study."},
+  {n:36,text:"Several different class types were involved in the project."},
+  {n:37,text:"A special group of schools was selected to take part."},
+  {n:38,text:"Classroom assistants were used as part of the project."},
+  {n:39,text:"The project was responsible for aggravating existing problems."},
+  {n:40,text:"Certain groups of pupils within the sample were identified as having benefited."},
+];
+
+// ─── STATE ───
+let studentName='',studentClass='';
+let tfngAnswers={};
+let multi2122=new Set();
+let q14_20_ans={},q27_31_ans={},q32_40_ans={};
+let timerInterval=null,secondsLeft=3600;
+let currentTab=1;
+
+// ─── TAB SWITCH ───
+function switchTab(n){
+  currentTab=n;
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.toggle('active',+t.dataset.tab===n));
+  document.querySelectorAll('.passage-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.q-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pp'+n).classList.add('active');
+  document.getElementById('qp'+n).classList.add('active');
+  // scroll both cols to top
+  document.querySelector('.passage-col').scrollTop=0;
+  document.querySelector('.questions-col').scrollTop=0;
+}
+
+// ─── BUILD Q1-6 ───
+function buildTFNG(){
+  const g=document.getElementById('tfng-group');
+  tfngData.forEach(({n,text})=>{
+    const d=document.createElement('div');
+    d.className='tfng-row';
+    d.innerHTML=`<div class="tfng-stmt"><span class="q-num">${n}</span>${text}</div>
+      <div class="tfng-options">
+        ${['TRUE','FALSE','NOT GIVEN'].map(o=>`<button class="tfng-btn" data-q="${n}" data-val="${o==='NOT GIVEN'?'ng':o.toLowerCase()}">${o}</button>`).join('')}
+      </div>`;
+    g.appendChild(d);
+  });
+  g.querySelectorAll('.tfng-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const q=this.dataset.q,v=this.dataset.val;
+      g.querySelectorAll(`.tfng-btn[data-q="${q}"]`).forEach(b=>b.classList.remove('selected'));
+      this.classList.add('selected');
+      tfngAnswers[q]=v;
+      updateProgress();
+    });
+  });
+}
+
+// ─── BUILD Q14-20 ───
+function buildQ14_20(){
+  const tbody=document.getElementById('q14-20-body');
+  const opts=['A','B','C','D','E','F','G','H'];
+  q14to20Data.forEach(({n,text})=>{
+    const tr=document.createElement('tr');
+    const oh=opts.map(l=>`<option value="${l}">${l}</option>`).join('');
+    tr.innerHTML=`<td class="q-num">${n}</td><td>${text}</td>
+      <td><select class="match-select" id="q${n}"><option value="">–</option>${oh}</select></td>`;
+    tbody.appendChild(tr);
+    tr.querySelector('select').addEventListener('change',function(){q14_20_ans[n]=this.value;updateProgress();});
+  });
+}
+
+// ─── BUILD Q21-22 ───
+function buildQ21_22(){
+  const cont=document.getElementById('q21-22-options');
+  q21to22Options.forEach(({id,text})=>{
+    const d=document.createElement('div');
+    d.className='multi-option';
+    d.innerHTML=`<input type="checkbox" id="opt_${id}"><label for="opt_${id}" style="cursor:pointer"><strong>${id}.</strong> ${text}</label>`;
+    cont.appendChild(d);
+    d.querySelector('input').addEventListener('change',function(){
+      if(this.checked){if(multi2122.size>=2){this.checked=false;return;}multi2122.add(id);}
+      else{multi2122.delete(id);}
+      d.classList.toggle('selected',this.checked);
+      updateProgress();
+    });
+  });
+}
+
+// ─── BUILD Q27-31 ───
+function buildQ27_31(){
+  const tbody=document.getElementById('q27-31-body');
+  const opts=['A','B','C','D','E','F'];
+  q27to31Data.forEach(({n,text})=>{
+    const tr=document.createElement('tr');
+    const oh=opts.map(l=>`<option value="${l}">${l}</option>`).join('');
+    tr.innerHTML=`<td class="q-num">${n}</td><td>${text}</td>
+      <td><select class="match-select" id="q${n}"><option value="">–</option>${oh}</select></td>`;
+    tbody.appendChild(tr);
+    tr.querySelector('select').addEventListener('change',function(){q27_31_ans[n]=this.value;updateProgress();});
+  });
+}
+
+// ─── BUILD Q32-40 ───
+function buildQ32_40(){
+  const tbody=document.getElementById('q32-40-body');
+  q32to40Data.forEach(({n,text})=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${n}. ${text}</td>
+      ${['A','B','C'].map(o=>`<td class="opt-cell"><div class="radio-circle" id="rc_${n}_${o}" data-q="${n}" data-opt="${o}"></div></td>`).join('')}`;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('.radio-circle').forEach(rc=>{
+    rc.addEventListener('click',function(){
+      const q=this.dataset.q,o=this.dataset.opt;
+      ['A','B','C'].forEach(x=>document.getElementById(`rc_${q}_${x}`).classList.remove('selected'));
+      this.classList.add('selected');
+      q32_40_ans[q]=o;
+      updateProgress();
+    });
+  });
+}
+
+// ─── TEXT INPUTS progress ───
+function bindTextInputs(){
+  ['q7','q8','q9','q10','q11','q12','q13','q23','q24','q25','q26'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('input',updateProgress);
+  });
+}
+
+// ─── PROGRESS ───
+function countAnswered(){
+  let c=0;
+  c+=Object.keys(tfngAnswers).length;
+  ['q7','q8','q9','q10','q11','q12','q13'].forEach(id=>{if(document.getElementById(id)?.value.trim())c++;});
+  c+=Object.keys(q14_20_ans).filter(k=>q14_20_ans[k]).length;
+  c+=multi2122.size;
+  ['q23','q24','q25','q26'].forEach(id=>{if(document.getElementById(id)?.value.trim())c++;});
+  c+=Object.keys(q27_31_ans).filter(k=>q27_31_ans[k]).length;
+  c+=Object.keys(q32_40_ans).length;
+  return c;
+}
+function updateProgress(){
+  document.getElementById('progress-bar').style.width=(countAnswered()/40*100)+'%';
+}
+
+// ─── TIMER ───
+function startTimer(){
+  timerInterval=setInterval(()=>{
+    secondsLeft--;
+    const m=Math.floor(secondsLeft/60),s=secondsLeft%60;
+    const el=document.getElementById('timer');
+    el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    if(secondsLeft<=300) el.style.color='#e05252';
+    if(secondsLeft<=0){clearInterval(timerInterval);submitExam();}
+  },1000);
+}
+
+// ─── BAND ───
+function getBand(score){
+  const t=[[39,9.0],[37,8.5],[35,8.0],[33,7.5],[30,7.0],[27,6.5],[23,6.0],[19,5.5],[15,5.0],[13,4.5],[10,4.0],[8,3.5],[6,3.0],[4,2.5],[3,2.0],[1,1.0]];
+  for(const[min,band]of t){if(score>=min)return band;}
+  return 0;
+}
+
+// ─── COLLECT & SCORE ───
+function collectAll(){
+  const ans={};
+  for(let i=1;i<=6;i++) ans[`q${i}`]=tfngAnswers[i]||'';
+  ['7','8','9','10','11','12','13'].forEach(n=>ans[`q${n}`]=(document.getElementById(`q${n}`)?.value.trim().toLowerCase()||''));
+  for(let i=14;i<=20;i++) ans[`q${i}`]=(q14_20_ans[i]||'').toLowerCase();
+  const s=[...multi2122].sort();
+  ans['q21']=s[0]?.toLowerCase()||'';
+  ans['q22']=s[1]?.toLowerCase()||'';
+  ['23','24','25','26'].forEach(n=>ans[`q${n}`]=(document.getElementById(`q${n}`)?.value.trim().toLowerCase()||''));
+  for(let i=27;i<=31;i++) ans[`q${i}`]=(q27_31_ans[i]||'').toLowerCase();
+  for(let i=32;i<=40;i++) ans[`q${i}`]=(q32_40_ans[i]||'').toLowerCase();
+  return ans;
+}
+
+function calcScore(ans){
+  let score=0;
+  for(let i=1;i<=6;i++){if(ans[`q${i}`]===_k[i-1])score++;}
+  for(let i=7;i<=13;i++){if(ans[`q${i}`]===_k[i-1])score++;}
+  for(let i=14;i<=20;i++){if(ans[`q${i}`]===_k[i-1])score++;}
+  // Q21-22: _k[20]='a,c'
+  const ck=_k[20].split(',').sort();
+  const sk=[ans['q21'],ans['q22']].filter(Boolean).sort();
+  if(JSON.stringify(ck)===JSON.stringify(sk))score+=2;
+  // Q23-26: _k index 21-24
+  for(let i=23;i<=26;i++){if(ans[`q${i}`]===_k[i-2])score++;}
+  // Q27-31: _k index 25-29
+  for(let i=27;i<=31;i++){if(ans[`q${i}`]===_k[i-2])score++;}
+  // Q32-40: _k index 30-38
+  for(let i=32;i<=40;i++){if(ans[`q${i}`]===_k[i-2])score++;}
+  return score;
+}
+
+// ─── MODAL ───
+function openModal(){document.getElementById('ans-count').textContent=countAnswered();document.getElementById('modal').classList.add('show');}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+
+// ─── SUBMIT ───
+async function submitExam(){
+  closeModal();
+  clearInterval(timerInterval);
+  const ans=collectAll();
+  const totalScore=calcScore(ans);
+  const bandScore=getBand(totalScore);
+  const answersList=Object.entries(ans).map(([k,v])=>k+':'+v).join(', ');
+  const payload={test_name:'reading_test 2',name:studentName,cls:studentClass,score:totalScore+'/40 - Band '+bandScore.toFixed(1),answers:answersList};
+  document.getElementById('sending-overlay').classList.add('show');
+  try{
+    const params=new URLSearchParams(payload).toString();
+    await fetch(SCRIPT_URL+'?'+params,{method:'GET',mode:'no-cors'});
+  }catch(e){}
+  document.getElementById('sending-overlay').classList.remove('show');
+  document.getElementById('exam-screen').style.display='none';
+  document.getElementById('res-name').textContent=studentName;
+  document.getElementById('res-correct').textContent=`${totalScore}/40`;
+  document.getElementById('res-band').textContent=bandScore.toFixed(1);
+  document.getElementById('result-screen').style.display='flex';
+}
+
+// ─── LOGIN ───
+function initLogin(){
+  const ni=document.getElementById('inp-name'),ci=document.getElementById('inp-class'),btn=document.getElementById('btn-start');
+  function check(){btn.classList.toggle('active',ni.value.trim().length>1&&ci.value.trim().length>1);}
+  ni.addEventListener('input',check);ci.addEventListener('input',check);
+  btn.addEventListener('click',()=>{
+    if(!btn.classList.contains('active'))return;
+    studentName=ni.value.trim();studentClass=ci.value.trim();
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('exam-screen').style.display='flex';
+    document.getElementById('hdr-name').textContent=studentName+' · '+studentClass;
+    startTimer();
+  });
+}
+
+// ─── SECURITY ───
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&['u','s','p'].includes(e.key.toLowerCase()))e.preventDefault();
+  if(e.key==='F12')e.preventDefault();
+});
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded',()=>{
+  initLogin();
+  buildTFNG();
+  buildQ14_20();
+  buildQ21_22();
+  buildQ27_31();
+  buildQ32_40();
+  bindTextInputs();
+});
+</script>
+</body>
+</html>
