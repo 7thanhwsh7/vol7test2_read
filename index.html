@@ -945,7 +945,10 @@ async function submitExam(){
   const ans=collectAll();
   const totalScore=calcScore(ans);
   const bandScore=getBand(totalScore);
-  const answersList=Object.entries(ans).map(([k,v])=>k+':'+v).join(', ');
+  // Format answers as {"1":"val","2":"val",...} — strip "q" prefix
+  const answersObj={};
+  Object.entries(ans).forEach(([k,v])=>{ answersObj[k.replace('q','')]=v; });
+  const answersList=JSON.stringify(answersObj);
   const payload={test_name:'reading_test 2',name:studentName,cls:studentClass,score:totalScore+'/40 - Band '+bandScore.toFixed(1),answers:answersList};
   document.getElementById('sending-overlay').classList.add('show');
   try{
