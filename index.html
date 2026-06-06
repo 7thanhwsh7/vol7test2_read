@@ -19,6 +19,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Be Vietnam Pro', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; user-select: none; -webkit-user-select: none; }
+  .passage-col { user-select: text; -webkit-user-select: text; }
 
   /* ── LOGIN ── */
   #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--navy); background-image: radial-gradient(ellipse at 20% 50%, #2a2a4a 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, #1e3a2e 0%, transparent 50%); }
@@ -34,6 +35,20 @@
   .btn-start.active { opacity: 1; pointer-events: all; }
   .btn-start.active:hover { background: #0d0d1f; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,26,46,0.4); }
   .login-note { text-align: center; font-size: 0.72rem; color: var(--text-light); margin-top: 18px; }
+  .login-warning {
+    margin-top: 16px;
+    background: #fff8ec;
+    border: 1.5px solid #e8a020;
+    border-radius: 4px;
+    padding: 12px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .login-warning .warn-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+  .login-warning .warn-text { font-size: 0.78rem; color: #7a4a00; line-height: 1.6; }
+  .login-warning .warn-text strong { color: #c45000; font-weight: 700; }
 
   /* ── EXAM SCREEN ── */
   #exam-screen { display: none; flex-direction: column; height: 100vh; }
@@ -62,7 +77,7 @@
   /* Body */
   .exam-body { display: flex; flex: 1; overflow: hidden; }
   .passage-col { width: 50%; overflow-y: auto; padding: 32px 36px; background: var(--white); border-right: 1px solid var(--border); }
-  .questions-col { width: 50%; overflow-y: auto; padding: 24px 28px; background: var(--cream); }
+  .questions-col { flex: 1; overflow-y: auto; padding: 24px 28px; background: var(--cream); user-select: text; -webkit-user-select: text; }
 
   /* Passage panel visibility */
   .passage-panel { display: none; }
@@ -178,6 +193,236 @@
   /* Scrollbar */
   .passage-col::-webkit-scrollbar, .questions-col::-webkit-scrollbar { width: 4px; }
   .passage-col::-webkit-scrollbar-thumb, .questions-col::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── PASSAGE HIGHLIGHT (bút dạ quang) ── */
+  .passage-col mark.hl {
+    background: rgba(255, 220, 50, 0.45);
+    border-radius: 2px;
+    padding: 0 1px;
+    color: inherit;
+    cursor: pointer;
+    position: relative;
+  }
+  .passage-col mark.hl:hover::after {
+    content: '✕';
+    position: absolute;
+    top: -10px; right: -6px;
+    font-size: 9px;
+    background: #e05252;
+    color: #fff;
+    border-radius: 50%;
+    width: 14px; height: 14px;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 14px;
+    text-align: center;
+  }
+
+  /* Highlight toolbar */
+  #hl-toolbar {
+    display: none;
+    position: fixed;
+    z-index: 500;
+    background: var(--navy);
+    border-radius: 6px;
+    padding: 5px 8px;
+    gap: 6px;
+    align-items: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    pointer-events: all;
+  }
+  #hl-toolbar.show { display: flex; }
+  #hl-toolbar .hl-color {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+  }
+  #hl-toolbar .hl-color:hover { transform: scale(1.2); border-color: #fff; }
+  #hl-toolbar .hl-erase {
+    color: #fff;
+    font-size: 0.7rem;
+    cursor: pointer;
+    padding: 2px 7px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 3px;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  #hl-toolbar .hl-erase:hover { background: rgba(255,255,255,0.15); }
+
+  /* ── QUESTION FOCUS HIGHLIGHT ── */
+  .tfng-row.q-focused { background: #fdf8ec; border-radius: 4px; box-shadow: inset 3px 0 0 var(--gold); padding-left: 10px; transition: all 0.2s; }
+  .fill-block.q-focused { background: #fdf8ec; border-radius: 4px; box-shadow: inset 3px 0 0 var(--gold); padding: 6px 10px; transition: all 0.2s; }
+  .flow-box.q-focused { background: #fdf8ec; border: 1px solid var(--gold); box-shadow: 0 0 0 2px rgba(201,168,76,0.2); transition: all 0.2s; }
+  .match-table tr.q-focused td { background: #fdf8ec; }
+  .classify-table tr.q-focused td { background: #fdf8ec; }
+  .multi-option.q-focused { background: #fdf8ec !important; border-color: var(--gold) !important; }
+  .summary-text .seg-focused { background: #fdf8ec; border-radius: 3px; padding: 1px 2px; }
+
+  /* ── RESULT SCREEN ── */
+  .btn-review { display:inline-flex; align-items:center; gap:8px; margin-top:20px; padding:12px 28px; background:var(--navy); color:var(--gold); border:none; border-radius:3px; font-family:'Be Vietnam Pro',sans-serif; font-size:0.88rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+  .btn-review:hover { background:#0d0d1f; transform:translateY(-1px); }
+
+  /* ── REVIEW MODE ── */
+  .review-banner { display:none; background:#1a6b3a; color:#fff; padding:10px 24px; font-size:0.8rem; font-weight:600; letter-spacing:1px; text-align:center; flex-shrink:0; }
+  .review-banner.show { display:block; }
+
+  /* Answer badge */
+  .ans-badge { display:inline-flex; align-items:center; gap:5px; margin-top:7px; padding:4px 12px; border-radius:20px; font-size:0.78rem; font-weight:700; letter-spacing:0.5px; }
+  .ans-badge.correct   { background:#e6f4ec; color:#1a6b3a; border:1.5px solid #a3d4b5; }
+  .ans-badge.wrong     { background:#fdecea; color:#b71c1c; border:1.5px solid #f4aaaa; }
+  .ans-badge.blank     { background:#f0f0f0; color:#888;    border:1.5px solid #ccc; }
+
+  /* Disable all inputs in review */
+  .review-active input, .review-active select, .review-active button.tfng-btn, .review-active .radio-circle { pointer-events:none !important; opacity:0.7; }
+  .review-active .hl-color, .review-active .hl-erase { pointer-events:none !important; }
+  .review-active #hl-toolbar { display:none !important; }
+
+  /* Back to result btn */
+  .btn-back-result { padding:6px 16px; background:transparent; color:var(--gold-light); border:1px solid rgba(201,168,76,0.5); border-radius:3px; font-family:'Be Vietnam Pro',sans-serif; font-size:0.78rem; cursor:pointer; transition:all 0.2s; }
+  .btn-back-result:hover { background:rgba(201,168,76,0.15); }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 56px;
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    gap: 4px;
+    overflow-y: auto;
+    flex-shrink: 0;
+    border-left: 1px solid rgba(255,255,255,0.06);
+  }
+  .sidebar::-webkit-scrollbar { width: 2px; }
+  .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+
+  .sb-btn {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.45);
+    font-family: 'Be Vietnam Pro', sans-serif;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sb-btn:hover { transform: scale(1.1); }
+  .sb-btn.answered { background: var(--gold); color: var(--navy); }
+  .sb-btn.flagged  { background: #e07020; color: #fff; }
+  .sb-btn.flag-answered { background: var(--gold); color: var(--navy); }
+  .sb-btn.flag-answered::after {
+    content: '';
+    position: absolute;
+    top: 3px; right: 3px;
+    width: 7px; height: 7px;
+    background: #e05252;
+    border-radius: 50%;
+    border: 1.5px solid var(--navy);
+  }
+
+  .sb-divider {
+    width: 30px;
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 4px 0;
+  }
+
+  .sb-flag-toggle {
+    width: 34px; height: 34px;
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 6px;
+    color: var(--gold);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 4px;
+  }
+  .sb-flag-toggle:hover { background: rgba(201,168,76,0.15); }
+  .sb-flag-toggle.active { background: rgba(201,168,76,0.2); border-color: var(--gold); }
+
+  /* Flag panel */
+  .flag-panel {
+    display: none;
+    position: absolute;
+    right: 64px;
+    top: 0;
+    width: 240px;
+    background: var(--navy);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 6px;
+    padding: 14px;
+    z-index: 200;
+    box-shadow: -4px 4px 20px rgba(0,0,0,0.5);
+  }
+  .flag-panel.show { display: block; }
+  .flag-panel h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    color: var(--gold);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .flag-panel-empty { font-size: 0.78rem; color: rgba(255,255,255,0.3); text-align: center; padding: 12px 0; }
+  .flag-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-bottom: 3px;
+  }
+  .flag-item:hover { background: rgba(255,255,255,0.07); }
+  .flag-item .fi-left { display: flex; align-items: center; gap: 8px; }
+  .flag-item .fi-num {
+    width: 26px; height: 26px;
+    background: #e07020;
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; color: #fff;
+  }
+  .flag-item .fi-label { font-size: 0.78rem; color: rgba(255,255,255,0.7); }
+  .flag-item .fi-clear {
+    font-size: 0.7rem; color: rgba(255,255,255,0.3);
+    cursor: pointer; padding: 2px 5px;
+    border-radius: 3px;
+    transition: all 0.15s;
+  }
+  .flag-item .fi-clear:hover { background: rgba(255,255,255,0.1); color: #e05252; }
+
+  /* Flag button on each question */
+  .flag-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    width: 26px; height: 26px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.5;
+    z-index: 10;
+  }
+  .flag-btn:hover { opacity: 1; border-color: #e07020; background: rgba(224,112,32,0.08); }
+  .flag-btn.flagged { opacity: 1; background: rgba(224,112,32,0.12); border-color: #e07020; }
+
+  /* Question rows need relative for flag btn */
+  .tfng-row { position: relative; padding-right: 36px !important; }
+  .fill-block { position: relative; padding-right: 36px !important; }
+  .match-table td:first-child { position: relative; }
 </style>
 </head>
 <body>
@@ -192,6 +437,13 @@
     <label>Mã Lớp (Class ID)</label>
     <input type="text" id="inp-class" placeholder="VD: IELTS-2025-A" autocomplete="off">
     <button class="btn-start" id="btn-start">🚀 Bắt đầu làm bài</button>
+    <div class="login-warning">
+      <div class="warn-icon">⚠️</div>
+      <div class="warn-text">
+        <strong>Lưu ý quan trọng:</strong> Hãy nhấn nút <strong>Nộp bài</strong> ít nhất <strong>30 giây trước khi hết giờ</strong> để hệ thống kịp lưu điểm của bạn.<br>
+        Nếu hết giờ mà chưa nộp, <strong>điểm sẽ không được ghi nhận</strong>.
+      </div>
+    </div>
     <div class="login-note">Vui lòng kiểm tra thông tin trước khi bắt đầu.</div>
   </div>
 </div>
@@ -203,7 +455,8 @@
     <div class="header-right">
       <div class="header-info">IELTS Academic Reading &nbsp;·&nbsp; <span class="name-tag" id="hdr-name"></span></div>
       <div class="timer-badge" id="timer">60:00</div>
-      <button class="btn-submit-hdr" onclick="openModal()">Nộp bài</button>
+      <button class="btn-submit-hdr" id="btn-submit-hdr" onclick="openModal()">Nộp bài</button>
+      <button class="btn-back-result" id="btn-back-result" style="display:none" onclick="exitReviewMode()">← Về kết quả</button>
     </div>
   </div>
 
@@ -214,6 +467,8 @@
     <div class="ptab" data-tab="3" onclick="switchTab(3)">Passage 3 <span class="tab-count">Q27–40</span></div>
   </div>
   <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+  <div class="review-banner" id="review-banner">👁 Chế độ xem lại — không thể chỉnh sửa</div>
+
 
   <div class="exam-body">
     <!-- ──── PASSAGE COLUMN ──── -->
@@ -386,8 +641,28 @@
       </div>
 
     </div><!-- /questions-col -->
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar" style="position:relative;">
+      <button class="sb-flag-toggle" id="sb-flag-toggle" title="Danh sách câu đã flag" onclick="toggleFlagPanel()">🚩</button>
+      <div class="flag-panel" id="flag-panel">
+        <h4>🚩 Câu đã đánh dấu</h4>
+        <div id="flag-panel-list"></div>
+      </div>
+      <hr class="sb-divider">
+      <div id="sb-nums"></div>
+    </div>
+
   </div><!-- /exam-body -->
 </div><!-- /exam-screen -->
+
+<!-- Highlight Toolbar -->
+<div id="hl-toolbar">
+  <div class="hl-color" style="background:#FFD700" data-color="rgba(255,215,0,0.45)" title="Vàng"></div>
+  <div class="hl-color" style="background:#90EE90" data-color="rgba(100,220,100,0.45)" title="Xanh lá"></div>
+  <div class="hl-color" style="background:#87CEEB" data-color="rgba(100,180,235,0.45)" title="Xanh dương"></div>
+  <div class="hl-color" style="background:#FFB6C1" data-color="rgba(255,150,170,0.45)" title="Hồng"></div>
+  <div class="hl-erase" id="hl-erase-btn">✕ Xóa</div>
+</div>
 
 <!-- Modal -->
 <div class="modal-overlay" id="modal">
@@ -419,6 +694,7 @@
       <div class="score-box"><div class="score-label">Band Score</div><div class="score-val band" id="res-band"></div></div>
     </div>
     <div class="result-note">Kết quả đã được ghi nhận thành công.<br>Cảm ơn bạn đã tham gia bài kiểm tra cùng G.EDU.</div>
+    <div><button class="btn-review" onclick="enterReviewMode()">👁 Xem lại bài làm</button></div>
   </div>
 </div>
 
@@ -603,6 +879,7 @@ function countAnswered(){
 }
 function updateProgress(){
   document.getElementById('progress-bar').style.width=(countAnswered()/40*100)+'%';
+  if(document.getElementById('sb-nums')) refreshSidebar();
 }
 
 // ─── TIMER ───
@@ -676,6 +953,11 @@ async function submitExam(){
     await fetch(SCRIPT_URL+'?'+params,{method:'GET',mode:'no-cors'});
   }catch(e){}
   document.getElementById('sending-overlay').classList.remove('show');
+  // Save snapshot for review
+  _savedAnswers = ans;
+  _savedScore = totalScore;
+  _savedBand = bandScore;
+
   document.getElementById('exam-screen').style.display='none';
   document.getElementById('res-name').textContent=studentName;
   document.getElementById('res-correct').textContent=`${totalScore}/40`;
@@ -698,6 +980,635 @@ function initLogin(){
   });
 }
 
+
+// ═══════════════════════════════════════════════════════
+//  A. PASSAGE HIGHLIGHT (bút dạ quang)
+// ═══════════════════════════════════════════════════════
+(function(){
+  const toolbar = document.getElementById('hl-toolbar');
+  let activeColor = 'rgba(255,215,0,0.45)';
+  let hlRange = null;
+
+  // Color picker
+  toolbar.querySelectorAll('.hl-color').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      activeColor = btn.dataset.color;
+      applyHighlight(activeColor);
+      hideToolbar();
+    });
+  });
+
+  // Erase button
+  document.getElementById('hl-erase-btn').addEventListener('click', e => {
+    e.stopPropagation();
+    if(hlRange) {
+      // unwrap any marks in selection
+      removeHighlightsInRange(hlRange);
+    }
+    hideToolbar();
+  });
+
+  function showToolbar(x, y) {
+    // Clamp to viewport
+    const tw = 220;
+    const clampedX = Math.max(8, Math.min(x, window.innerWidth - tw - 8));
+    const clampedY = y < 60 ? y + 70 : y;  // flip below if too close to top
+    toolbar.style.left = clampedX + 'px';
+    toolbar.style.top  = clampedY + 'px';
+    toolbar.classList.add('show');
+  }
+  function hideToolbar() {
+    toolbar.classList.remove('show');
+    hlRange = null;
+  }
+
+  // Show toolbar on mouseup inside passage OR questions col
+  ['passage-col','questions-col'].forEach(cls => {
+    const col = document.querySelector('.' + cls);
+    if(!col) return;
+    col.addEventListener('mouseup', function(e) {
+      setTimeout(() => {
+        const sel = window.getSelection();
+        if(!sel || sel.isCollapsed || !sel.rangeCount) { hideToolbar(); return; }
+        const range = sel.getRangeAt(0);
+        const passageCol = document.querySelector('.passage-col');
+        const questionsCol = document.querySelector('.questions-col');
+        const inPassage = passageCol && passageCol.contains(range.commonAncestorContainer);
+        const inQuestions = questionsCol && questionsCol.contains(range.commonAncestorContainer);
+        if(!inPassage && !inQuestions) { hideToolbar(); return; }
+        hlRange = range.cloneRange();
+        const rect = range.getBoundingClientRect();
+        showToolbar(rect.left + rect.width/2 - 80, rect.top - 50);
+      }, 10);
+    });
+  });
+
+  // Hide toolbar on click outside
+  document.addEventListener('mousedown', function(e) {
+    if(!toolbar.contains(e.target)) hideToolbar();
+  });
+
+  function applyHighlight(color) {
+    if(!hlRange) return;
+    try {
+      // Try surroundContents first (works for simple same-element selections)
+      const mark = document.createElement('mark');
+      mark.className = 'hl';
+      mark.style.background = color;
+      hlRange.surroundContents(mark);
+      attachMarkRemove(mark);
+      window.getSelection().removeAllRanges();
+    } catch(err) {
+      // Fallback: walk text nodes in range, wrap each separately
+      try {
+        wrapTextNodes(hlRange, color);
+        window.getSelection().removeAllRanges();
+      } catch(e2) { /* silent */ }
+    }
+  }
+
+  function attachMarkRemove(mark) {
+    mark.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const parent = mark.parentNode;
+      if(!parent) return;
+      while(mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+      parent.removeChild(mark);
+      parent.normalize();
+    });
+  }
+
+  function wrapTextNodes(range, color) {
+    // Collect all text nodes within the range
+    const treeWalker = document.createTreeWalker(
+      range.commonAncestorContainer.nodeType === Node.TEXT_NODE
+        ? range.commonAncestorContainer.parentNode
+        : range.commonAncestorContainer,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+    const textNodes = [];
+    let node;
+    while((node = treeWalker.nextNode())) {
+      if(range.intersectsNode(node)) textNodes.push(node);
+    }
+    textNodes.forEach(textNode => {
+      let start = 0, end = textNode.length;
+      if(textNode === range.startContainer) start = range.startOffset;
+      if(textNode === range.endContainer) end = range.endOffset;
+      if(start >= end) return;
+
+      const before = textNode.textContent.slice(0, start);
+      const selected = textNode.textContent.slice(start, end);
+      const after = textNode.textContent.slice(end);
+
+      const mark = document.createElement('mark');
+      mark.className = 'hl';
+      mark.style.background = color;
+      mark.textContent = selected;
+      attachMarkRemove(mark);
+
+      const parent = textNode.parentNode;
+      if(before) parent.insertBefore(document.createTextNode(before), textNode);
+      parent.insertBefore(mark, textNode);
+      if(after) parent.insertBefore(document.createTextNode(after), textNode);
+      parent.removeChild(textNode);
+    });
+  }
+
+  function removeHighlightsInRange(range) {
+    const allMarks = document.querySelectorAll('.passage-col mark.hl, .questions-col mark.hl');
+    const marks = allMarks;
+    marks.forEach(mark => {
+      if(range.intersectsNode(mark)) {
+        const parent = mark.parentNode;
+        while(mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+        parent.removeChild(mark);
+        parent.normalize();
+      }
+    });
+  }
+})();
+
+// ═══════════════════════════════════════════════════════
+//  B. QUESTION FOCUS HIGHLIGHT
+// ═══════════════════════════════════════════════════════
+(function(){
+  // Helper: get focusable parent row/block of an element
+  function getFocusTarget(el) {
+    return el.closest('.tfng-row') ||
+           el.closest('.fill-block') ||
+           el.closest('.flow-box') ||
+           el.closest('tr') ||
+           el.closest('.multi-option');
+  }
+
+  function clearFocus() {
+    document.querySelectorAll('.q-focused').forEach(el => el.classList.remove('q-focused'));
+  }
+
+  // Focus on interact
+  document.querySelector('.questions-col').addEventListener('focusin', function(e) {
+    clearFocus();
+    const target = getFocusTarget(e.target);
+    if(target) target.classList.add('q-focused');
+  });
+
+  document.querySelector('.questions-col').addEventListener('click', function(e) {
+    clearFocus();
+    const target = getFocusTarget(e.target);
+    if(target) target.classList.add('q-focused');
+  });
+
+  // TF/NG buttons
+  document.addEventListener('click', function(e) {
+    if(e.target.classList.contains('tfng-btn')) {
+      clearFocus();
+      const row = e.target.closest('.tfng-row');
+      if(row) row.classList.add('q-focused');
+    }
+    if(e.target.classList.contains('radio-circle')) {
+      clearFocus();
+      const row = e.target.closest('tr');
+      if(row) row.classList.add('q-focused');
+    }
+    if(e.target.closest('.multi-option')) {
+      clearFocus();
+      e.target.closest('.multi-option').classList.add('q-focused');
+    }
+  });
+})();
+
+
+// ═══════════════════════════════════════════════════════
+//  REVIEW MODE
+// ═══════════════════════════════════════════════════════
+let _savedAnswers = {};   // student answers snapshot
+let _savedScore = 0;
+let _savedBand = 0;
+
+function enterReviewMode() {
+  // Hide result screen, show exam screen
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('exam-screen').style.display = 'flex';
+
+  // UI: banner, timer label, hide submit, show back btn
+  document.getElementById('review-banner').classList.add('show');
+  document.getElementById('timer').textContent = '✓ Đã nộp';
+  document.getElementById('timer').style.color = '#6fcf97';
+  document.getElementById('btn-submit-hdr').style.display = 'none';
+  document.getElementById('btn-back-result').style.display = 'inline-flex';
+
+  // Disable inputs
+  document.querySelector('.questions-col').classList.add('review-active');
+  document.querySelector('.exam-body').querySelectorAll('input, select').forEach(el => el.disabled = true);
+
+  // Render badges
+  renderAllBadges(_savedAnswers);
+
+  // Switch to tab 1
+  switchTab(1);
+}
+
+function exitReviewMode() {
+  // Back to result
+  document.getElementById('exam-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'flex';
+  document.getElementById('review-banner').classList.remove('show');
+  document.getElementById('btn-submit-hdr').style.display = 'inline-flex';
+  document.getElementById('btn-back-result').style.display = 'none';
+  document.getElementById('timer').textContent = '✓ Đã nộp';
+
+  // Remove all badges
+  document.querySelectorAll('.ans-badge').forEach(b => b.remove());
+}
+
+function renderAllBadges(ans) {
+  // Remove previous badges
+  document.querySelectorAll('.ans-badge').forEach(b => b.remove());
+
+  // ─── Q1–6 TF/NG ───
+  for (let i = 1; i <= 6; i++) {
+    const row = document.querySelector(`.tfng-btn[data-q="${i}"]`)?.closest('.tfng-row');
+    if (!row) continue;
+    const studentAns = ans[`q${i}`] || '';
+    const correct = _k[i - 1];
+    const badge = makeBadge(studentAns, correct, formatTFNG);
+    row.appendChild(badge);
+  }
+
+  // ─── Q7–9 flow inputs ───
+  for (let i = 7; i <= 9; i++) {
+    const inp = document.getElementById(`q${i}`);
+    if (!inp) continue;
+    const box = inp.closest('.flow-box');
+    const studentAns = ans[`q${i}`] || '';
+    const correct = _k[i - 1];
+    const badge = makeBadge(studentAns, correct, v => v || '—');
+    badge.style.marginTop = '6px';
+    badge.style.display = 'inline-flex';
+    box.appendChild(badge);
+  }
+
+  // ─── Q10–13 fill notes ───
+  for (let i = 10; i <= 13; i++) {
+    const inp = document.getElementById(`q${i}`);
+    if (!inp) continue;
+    const block = inp.closest('.fill-block');
+    const studentAns = ans[`q${i}`] || '';
+    const correct = _k[i - 1];
+    const badge = makeBadge(studentAns, correct, v => v || '—');
+    block.appendChild(badge);
+  }
+
+  // ─── Q14–20 match select ───
+  for (let i = 14; i <= 20; i++) {
+    const sel = document.getElementById(`q${i}`);
+    if (!sel) continue;
+    const td = sel.parentElement;
+    const studentAns = ans[`q${i}`] || '';
+    const correct = _k[i - 1];
+    const badge = makeBadge(studentAns, correct, v => v.toUpperCase() || '—');
+    badge.style.marginTop = '4px';
+    td.appendChild(badge);
+  }
+
+  // ─── Q21–22 multi-select ───
+  const opts21 = document.getElementById('q21-22-options');
+  if (opts21) {
+    const s21 = ans['q21'] || '';
+    const s22 = ans['q22'] || '';
+    const studentSet = [s21, s22].filter(Boolean).map(x => x.toLowerCase()).sort();
+    const correctSet = _k[20].split(',').sort();
+    const isCorrect = JSON.stringify(studentSet) === JSON.stringify(correctSet);
+    const displayVal = studentSet.length ? studentSet.map(x => x.toUpperCase()).join(', ') : '—';
+    const badge = document.createElement('div');
+    badge.className = 'ans-badge ' + (studentSet.length === 0 ? 'blank' : isCorrect ? 'correct' : 'wrong');
+    badge.innerHTML = (studentSet.length === 0 ? '— ' : isCorrect ? '✓ ' : '✗ ') + 'Bạn chọn: ' + displayVal;
+    badge.style.marginTop = '10px';
+    opts21.appendChild(badge);
+  }
+
+  // ─── Q23–26 summary fill ───
+  for (let i = 23; i <= 26; i++) {
+    const inp = document.getElementById(`q${i}`);
+    if (!inp) continue;
+    const studentAns = ans[`q${i}`] || '';
+    const correct = _k[i - 2];
+    const badge = makeBadge(studentAns, correct, v => v || '—');
+    badge.style.marginLeft = '6px';
+    badge.style.display = 'inline-flex';
+    inp.insertAdjacentElement('afterend', badge);
+  }
+
+  // ─── Q27–31 section match ───
+  for (let i = 27; i <= 31; i++) {
+    const sel = document.getElementById(`q${i}`);
+    if (!sel) continue;
+    const td = sel.parentElement;
+    const studentAns = ans[`q${i}`] || '';
+    const correct = _k[i - 2];
+    const badge = makeBadge(studentAns, correct, v => v.toUpperCase() || '—');
+    badge.style.marginTop = '4px';
+    td.appendChild(badge);
+  }
+
+  // ─── Q32–40 classify ───
+  for (let i = 32; i <= 40; i++) {
+    const studentAns = ans[`q${i}`] || '';
+    const correct = _k[i - 2];
+    const optCell = document.querySelector(`.radio-circle[data-q="${i}"][data-opt="${studentAns.toUpperCase()}"]`);
+    if (!optCell) continue;
+    const td = optCell.closest('td');
+    const badge = makeBadge(studentAns, correct, v => v.toUpperCase() || '—');
+    badge.style.fontSize = '0.68rem';
+    badge.style.padding = '2px 6px';
+    badge.style.marginTop = '4px';
+    td.appendChild(badge);
+  }
+}
+
+function makeBadge(studentAns, correct, formatFn) {
+  const badge = document.createElement('div');
+  const isBlank = !studentAns;
+  const isCorrect = !isBlank && studentAns.toLowerCase() === correct.toLowerCase();
+  badge.className = 'ans-badge ' + (isBlank ? 'blank' : isCorrect ? 'correct' : 'wrong');
+  const icon = isBlank ? '—' : isCorrect ? '✓' : '✗';
+  const display = formatFn(studentAns);
+  badge.textContent = icon + ' ' + (isBlank ? 'Bỏ trống' : display);
+  return badge;
+}
+
+function formatTFNG(v) {
+  if (!v) return '—';
+  if (v === 'true') return 'TRUE';
+  if (v === 'false') return 'FALSE';
+  if (v === 'ng') return 'NOT GIVEN';
+  return v.toUpperCase();
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  FLAG SYSTEM
+// ═══════════════════════════════════════════════════════
+
+// Q ranges per passage tab
+const Q_TAB = {
+  1: [1,13], 2: [14,26], 3: [27,40]
+};
+
+// Q label map
+const Q_LABELS = {};
+for(let i=1;i<=6;i++)   Q_LABELS[i]='TF/NG';
+for(let i=7;i<=9;i++)   Q_LABELS[i]='Flowchart';
+for(let i=10;i<=13;i++) Q_LABELS[i]='Notes fill';
+for(let i=14;i<=20;i++) Q_LABELS[i]='Paragraph match';
+Q_LABELS[21]='Multiple choice';Q_LABELS[22]='Multiple choice';
+for(let i=23;i<=26;i++) Q_LABELS[i]='Summary fill';
+for(let i=27;i<=31;i++) Q_LABELS[i]='Section match';
+for(let i=32;i<=40;i++) Q_LABELS[i]='Classify';
+
+let flaggedSet = new Set(JSON.parse(localStorage.getItem('ielts_flags')||'[]'));
+
+// ── Build sidebar numbers ──
+function buildSidebar() {
+  const cont = document.getElementById('sb-nums');
+  cont.innerHTML = '';
+  for(let i=1; i<=40; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'sb-btn';
+    btn.id = `sb-${i}`;
+    btn.textContent = i;
+    btn.title = `Câu ${i}`;
+    btn.addEventListener('click', () => jumpToQuestion(i));
+    cont.appendChild(btn);
+    if(i===13||i===26) {
+      const hr = document.createElement('hr');
+      hr.className = 'sb-divider';
+      cont.appendChild(hr);
+    }
+  }
+  refreshSidebar();
+}
+
+// ── Refresh all sidebar btn states ──
+function refreshSidebar() {
+  const ans = collectAll();
+  for(let i=1; i<=40; i++) {
+    const btn = document.getElementById(`sb-${i}`);
+    if(!btn) continue;
+    const hasAns = !!ans[`q${i}`];
+    const isFlagged = flaggedSet.has(i);
+    btn.className = 'sb-btn';
+    if(isFlagged && hasAns)   btn.classList.add('flag-answered');
+    else if(isFlagged)        btn.classList.add('flagged');
+    else if(hasAns)           btn.classList.add('answered');
+  }
+}
+
+// ── Jump to question ──
+function jumpToQuestion(n) {
+  // Find which tab
+  let targetTab = 1;
+  for(const [tab,[min,max]] of Object.entries(Q_TAB)) {
+    if(n >= min && n <= max) { targetTab = +tab; break; }
+  }
+  if(currentTab !== targetTab) switchTab(targetTab);
+
+  setTimeout(() => {
+    const el = getQuestionEl(n);
+    if(!el) return;
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    // Flash highlight
+    el.style.transition='box-shadow 0.3s';
+    el.style.boxShadow='0 0 0 3px var(--gold)';
+    setTimeout(() => { el.style.boxShadow=''; }, 1200);
+  }, 80);
+}
+
+// ── Get DOM element for question n ──
+function getQuestionEl(n) {
+  // TF/NG
+  if(n>=1&&n<=6) return document.querySelector(`.tfng-btn[data-q="${n}"]`)?.closest('.tfng-row');
+  // Flow
+  if(n>=7&&n<=9) return document.getElementById(`q${n}`)?.closest('.flow-box');
+  // Notes fill
+  if(n>=10&&n<=13) return document.getElementById(`q${n}`)?.closest('.fill-block');
+  // Q14-20 match, Q27-31 match
+  if((n>=14&&n<=20)||(n>=27&&n<=31)) return document.getElementById(`q${n}`)?.closest('tr');
+  // Q21-22
+  if(n===21||n===22) return document.getElementById('q21-22-options');
+  // Q23-26 summary
+  if(n>=23&&n<=26) return document.getElementById(`q${n}`)?.closest('.q-section');
+  // Q32-40 classify
+  if(n>=32&&n<=40) return document.querySelector(`.radio-circle[data-q="${n}"]`)?.closest('tr');
+  return null;
+}
+
+// ── Toggle flag on question n ──
+function toggleFlag(n) {
+  if(flaggedSet.has(n)) flaggedSet.delete(n);
+  else flaggedSet.add(n);
+  localStorage.setItem('ielts_flags', JSON.stringify([...flaggedSet]));
+  refreshFlagButtons();
+  refreshSidebar();
+  refreshFlagPanel();
+}
+
+// ── Refresh flag buttons on questions ──
+function refreshFlagButtons() {
+  document.querySelectorAll('.flag-btn').forEach(btn => {
+    const n = +btn.dataset.n;
+    btn.classList.toggle('flagged', flaggedSet.has(n));
+    btn.title = flaggedSet.has(n) ? 'Bỏ đánh dấu' : 'Đánh dấu câu này';
+  });
+}
+
+// ── Toggle flag panel ──
+function toggleFlagPanel() {
+  const panel = document.getElementById('flag-panel');
+  const toggle = document.getElementById('sb-flag-toggle');
+  const isShow = panel.classList.toggle('show');
+  toggle.classList.toggle('active', isShow);
+  if(isShow) refreshFlagPanel();
+}
+
+// ── Refresh flag panel list ──
+function refreshFlagPanel() {
+  const list = document.getElementById('flag-panel-list');
+  const sorted = [...flaggedSet].sort((a,b)=>a-b);
+  if(sorted.length === 0) {
+    list.innerHTML = '<div class="flag-panel-empty">Chưa có câu nào được đánh dấu</div>';
+    return;
+  }
+  list.innerHTML = sorted.map(n => `
+    <div class="flag-item" onclick="jumpToQuestion(${n});closeFlagPanel();">
+      <div class="fi-left">
+        <div class="fi-num">${n}</div>
+        <div class="fi-label">Câu ${n} · ${Q_LABELS[n]||''}</div>
+      </div>
+      <div class="fi-clear" onclick="event.stopPropagation();toggleFlag(${n});refreshFlagPanel();" title="Xóa flag">✕</div>
+    </div>`).join('');
+}
+
+function closeFlagPanel() {
+  document.getElementById('flag-panel').classList.remove('show');
+  document.getElementById('sb-flag-toggle').classList.remove('active');
+}
+
+// Close flag panel when clicking outside
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('flag-panel');
+  const toggle = document.getElementById('sb-flag-toggle');
+  if(panel && !panel.contains(e.target) && !toggle.contains(e.target)) {
+    panel.classList.remove('show');
+    toggle.classList.remove('active');
+  }
+});
+
+// ── Add flag buttons to all question rows ──
+function addFlagButtons() {
+  // Q1-6 TF/NG rows
+  for(let i=1;i<=6;i++) {
+    const row = document.querySelector(`.tfng-btn[data-q="${i}"]`)?.closest('.tfng-row');
+    if(row) row.appendChild(makeFlagBtn(i));
+  }
+  // Q10-13 fill blocks
+  for(let i=10;i<=13;i++) {
+    const block = document.getElementById(`q${i}`)?.closest('.fill-block');
+    if(block) block.appendChild(makeFlagBtn(i));
+  }
+  // Q7-9 flow boxes
+  for(let i=7;i<=9;i++) {
+    const box = document.getElementById(`q${i}`)?.closest('.flow-box');
+    if(box) {
+      box.style.position='relative';
+      box.appendChild(makeFlagBtn(i));
+    }
+  }
+  // Q14-20 match rows
+  for(let i=14;i<=20;i++) {
+    const tr = document.getElementById(`q${i}`)?.closest('tr');
+    if(tr) {
+      const td = document.createElement('td');
+      td.style.width='32px';
+      const fb = makeFlagBtn(i);
+      fb.style.position='static';
+      fb.style.display='block';
+      fb.style.margin='auto';
+      td.appendChild(fb);
+      tr.appendChild(td);
+    }
+  }
+  // Q21-22 section
+  const q2122sec = document.getElementById('q21-22-options')?.closest('.q-section');
+  if(q2122sec) {
+    q2122sec.style.position='relative';
+    const fb = makeFlagBtn(21);
+    fb.textContent='🚩 21–22';
+    fb.style.fontSize='0.65rem';
+    fb.style.width='auto';
+    fb.style.padding='0 6px';
+    q2122sec.appendChild(fb);
+  }
+  // Q23-26: one flag per input
+  for(let i=23;i<=26;i++) {
+    const inp = document.getElementById(`q${i}`);
+    if(!inp) continue;
+    const fb = makeFlagBtn(i);
+    fb.style.position='relative';
+    fb.style.display='inline-flex';
+    fb.style.top='auto';fb.style.right='auto';
+    fb.style.verticalAlign='middle';
+    fb.style.marginLeft='4px';
+    inp.insertAdjacentElement('afterend', fb);
+  }
+  // Q27-31 match rows
+  for(let i=27;i<=31;i++) {
+    const tr = document.getElementById(`q${i}`)?.closest('tr');
+    if(tr) {
+      const td = document.createElement('td');
+      td.style.width='32px';
+      const fb = makeFlagBtn(i);
+      fb.style.position='static';
+      fb.style.display='block';
+      fb.style.margin='auto';
+      td.appendChild(fb);
+      tr.appendChild(td);
+    }
+  }
+  // Q32-40 classify rows
+  for(let i=32;i<=40;i++) {
+    const tr = document.querySelector(`.radio-circle[data-q="${i}"]`)?.closest('tr');
+    if(tr) {
+      const td = document.createElement('td');
+      td.style.width='32px';
+      const fb = makeFlagBtn(i);
+      fb.style.position='static';
+      fb.style.display='block';
+      fb.style.margin='auto';
+      td.appendChild(fb);
+      tr.appendChild(td);
+    }
+  }
+  refreshFlagButtons();
+}
+
+function makeFlagBtn(n) {
+  const btn = document.createElement('button');
+  btn.className = 'flag-btn';
+  btn.dataset.n = n;
+  btn.textContent = '🚩';
+  btn.title = 'Đánh dấu câu này';
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleFlag(n);
+    refreshSidebar();
+  });
+  return btn;
+}
+
 // ─── SECURITY ───
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('keydown',e=>{
@@ -714,6 +1625,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   buildQ27_31();
   buildQ32_40();
   bindTextInputs();
+  buildSidebar();
+  // addFlagButtons after a tick so DOM is settled
+  setTimeout(addFlagButtons, 50);
 });
 </script>
 </body>
